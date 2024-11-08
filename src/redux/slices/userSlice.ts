@@ -1,22 +1,34 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface User {
   name: string;
   email: string;
   password: string;
 }
+
+interface UserState {
+  users: User[];
+  loggedInUser: User | null;
+  status: string;
+}
+
+const initialState: UserState = {
+  users: [],
+  loggedInUser: null,
+  status: "loggedOut",
+};
+
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    users: [],
-    loggedInUser: null,
-    status: "loggedOut",
-  },
+  initialState,
   reducers: {
-    register: () => {
-      // Implement user registration logic here
+    register: (state, action: PayloadAction<User>) => {
+      // Add the new user to the users array
+      state.users.push(action.payload);
+      // Change status to "Registered"
+      state.status = "Registered";
     },
-    login: (state, action) => {
+    login: (state, action: PayloadAction<{ email: string; password: string }>) => {
       const user = state.users.find(
         (user: User) =>
           user.email === action.payload.email &&
@@ -27,8 +39,10 @@ const userSlice = createSlice({
         state.status = "loggedIn";
       }
     },
-    logout: () => {
-      // Implement user logout logic here
+    logout: (state) => {
+      // Reset status to "loggedOut"
+      state.loggedInUser = null;
+      state.status = "loggedOut";
     },
   },
 });
